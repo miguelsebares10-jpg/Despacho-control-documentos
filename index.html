@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ControlDoc">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Control Documentación Despacho</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #4c51bf;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #666;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-notif {
+            margin-left: auto;
+            background: #fbbf24;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-notif.active {
+            background: #10b981;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        textarea, input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 16px;
+        }
+        
+        textarea {
+            resize: none;
+            min-height: 80px;
+        }
+        
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+        
+        .alert-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .alert-box h3 {
+            color: #92400e;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .alert-box p {
+            color: #78350f;
+            font-size: 14px;
+        }
+        
+        .doc-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #10b981;
+        }
+        
+        .doc-item.alerta {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .doc-item.caducado {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .doc-texto {
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .doc-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .doc-fecha {
+            color: #666;
+        }
+        
+        .doc-estado {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .doc-estado.ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .doc-estado.alerta {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .doc-estado.caducado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .doc-acciones {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .btn-editar, .btn-eliminar {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .btn-editar {
+            background: #3b82f6;
+        }
+        
+        .btn-eliminar {
+            background: #ef4444;
+        }
+        
+        .btn-guardar, .btn-cancelar {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .btn-guardar {
+            background: #10b981;
+        }
+        
+        .btn-cancelar {
+            background: #6b7280;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+        
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+        
+        .install-prompt {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: #1f2937;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        
+        .install-prompt button {
+            background: #10b981;
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+        }
+        
+        .install-prompt .close {
+            background: transparent;
+            width: auto;
+            padding: 4px;
+            font-size: 20px;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Control Documentación</h1>
+            <div class="stats">
+                <div class="stat">
+                    <span>⚠️</span>
+                    <span><strong id="alertas-count">0</strong> alertas</span>
+                </div>
+                <div class="stat">
+                    <span>❌</span>
+                    <span><strong id="caducados-count">0</strong> caducados</span>
+                </div>
+                <button class="btn-notif" id="btn-notificaciones" onclick="activarNotificaciones()">
+                    🔕 Activar
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>➕ Añadir Documento</h2>
+            <label>Descripción del Documento</label>
+            <textarea id="texto" placeholder="Ej: Seguro responsabilidad civil despacho..."></textarea>
+            
+            <label>Fecha de Caducidad</label>
+            <input type="date" id="fecha">
+            
+            <button onclick="agregarDocumento()">➕ Añadir Documento</button>
+        </div>
+
+        <div id="alerta-container"></div>
+        <div id="documentos-container"></div>
+    </div>
+
+    <div id="install-prompt" class="install-prompt" style="display: none;">
+        <div style="flex: 1;">
+            <strong>📱 Instalar App</strong>
+            <p style="font-size: 13px; margin-top: 4px; opacity: 0.9;">Añade a tu pantalla de inicio para acceso rápido</p>
+        </div>
+        <button onclick="instalarApp()">Instalar</button>
+        <button class="close" onclick="cerrarPrompt()">✕</button>
+    </div>
+
+    <script>
+        let documentos = [];
+        let editandoId = null;
+        let deferredPrompt = null;
+        let notificacionesActivas = false;
+
+        // Cargar datos
+        function cargarDatos() {
+            const stored = localStorage.getItem('documentos');
+            if (stored) {
+                documentos = JSON.parse(stored);
+            }
+            
+            if (Notification.permission === 'granted') {
+                notificacionesActivas = true;
+                document.getElementById('btn-notificaciones').textContent = '🔔 ON';
+                document.getElementById('btn-notificaciones').classList.add('active');
+            }
+            
+            renderizar();
+        }
+
+        // Guardar datos
+        function guardarDatos() {
+            localStorage.setItem('documentos', JSON.stringify(documentos));
+            verificarYNotificar();
+            renderizar();
+        }
+
+        // Agregar documento
+        function agregarDocumento() {
+            const texto = document.getElementById('texto').value.trim();
+            const fecha = document.getElementById('fecha').value;
+            
+            if (!texto || !fecha) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            const nuevo = {
+                id: Date.now(),
+                texto: texto,
+                fechaCaducidad: fecha,
+                fechaCreacion: new Date().toISOString()
+            };
+            
+            documentos.push(nuevo);
+            document.getElementById('texto').value = '';
+            document.getElementById('fecha').value = '';
+            guardarDatos();
+        }
+
+        // Eliminar documento
+        function eliminarDocumento(id) {
+            if (confirm('¿Eliminar este documento?')) {
+                documentos = documentos.filter(d => d.id !== id);
+                guardarDatos();
+            }
+        }
+
+        // Editar documento
+        function editarDocumento(id) {
+            editandoId = id;
+            renderizar();
+        }
+
+        function guardarEdicion(id) {
+            const texto = document.getElementById('edit-texto-' + id).value;
+            const fecha = document.getElementById('edit-fecha-' + id).value;
+            
+            documentos = documentos.map(d => 
+                d.id === id ? {...d, texto, fechaCaducidad: fecha} : d
+            );
+            
+            editandoId = null;
+            guardarDatos();
+        }
+
+        function cancelarEdicion() {
+            editandoId = null;
+            renderizar();
+        }
+
+        // Calcular días restantes
+        function calcularDias(fecha) {
+            const hoy = new Date();
+            const caducidad = new Date(fecha);
+            const diff = caducidad - hoy;
+            return Math.ceil(diff / (1000 * 60 * 60 * 24));
+        }
+
+        // Obtener estado
+        function obtenerEstado(fecha) {
+            const dias = calcularDias(fecha);
+            if (dias < 0) return { tipo: 'caducado', texto: 'Caducado' };
+            if (dias <= 30) return { tipo: 'alerta', texto: `${dias} días` };
+            return { tipo: 'ok', texto: `${dias} días` };
+        }
+
+        // Activar notificaciones
+        async function activarNotificaciones() {
+            if (!('Notification' in window)) {
+                alert('Tu navegador no soporta notificaciones');
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                notificacionesActivas = true;
+                document.getElementById('btn-notificaciones').textContent = '🔔 ON';
+                document.getElementById('btn-notificaciones').classList.add('active');
+                new Notification('¡Notificaciones activadas!', {
+                    body: 'Recibirás alertas de documentos próximos a caducar',
+                    icon: '📄'
+                });
+                verificarYNotificar();
+            }
+        }
+
+        // Verificar y notificar
+        function verificarYNotificar() {
+            if (!notificacionesActivas || Notification.permission !== 'granted') return;
+
+            documentos.forEach(doc => {
+                const dias = calcularDias(doc.fechaCaducidad);
+                const key = 'notificado_' + doc.id;
+                const yaNotificado = localStorage.getItem(key);
+
+                if ((dias <= 30 && dias >= 0 && !yaNotificado) || (dias < 0 && !yaNotificado)) {
+                    let titulo, mensaje;
+                    
+                    if (dias < 0) {
+                        titulo = '🔴 Documento CADUCADO';
+                        mensaje = doc.texto + ' - Caducó hace ' + Math.abs(dias) + ' días';
+                    } else if (dias <= 7) {
+                        titulo = '🔴 URGENTE: Caduca esta semana';
+                        mensaje = doc.texto + ' - Quedan ' + dias + ' días';
+                    } else {
+                        titulo = '⚠️ Documento próximo a caducar';
+                        mensaje = doc.texto + ' - Quedan ' + dias + ' días';
+                    }
+
+                    new Notification(titulo, {
+                        body: mensaje,
+                        icon: '📄',
+                        requireInteraction: dias <= 7,
+                        tag: 'doc-' + doc.id
+                    });
+                    
+                    localStorage.setItem(key, 'true');
+                }
+            });
+        }
+
+        // Renderizar
+        function renderizar() {
+            const ordenados = [...documentos].sort((a, b) => 
+                new Date(a.fechaCaducidad) - new Date(b.fechaCaducidad)
+            );
+
+            const alertas = documentos.filter(d => {
+                const dias = calcularDias(d.fechaCaducidad);
+                return dias <= 30 && dias >= 0;
+            }).length;
+
+            const caducados = documentos.filter(d => calcularDias(d.fechaCaducidad) < 0).length;
+
+            document.getElementById('alertas-count').textContent = alertas;
+            document.getElementById('caducados-count').textContent = caducados;
+
+            // Alerta
+            const alertaContainer = document.getElementById('alerta-container');
+            if (alertas > 0) {
+                alertaContainer.innerHTML = `
+                    <div class="alert-box">
+                        <h3>⚠️ Atención: Documentos próximos a caducar</h3>
+                        <p>Tienes ${alertas} documento(s) que caducan en los próximos 30 días.</p>
+                    </div>
+                `;
+            } else {
+                alertaContainer.innerHTML = '';
+            }
+
+            // Documentos
+            const container = document.getElementById('documentos-container');
+            
+            if (ordenados.length === 0) {
+                container.innerHTML = `
+                    <div class="card empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p style="font-size: 16px; margin-bottom: 4px;">No hay documentos</p>
+                        <p style="font-size: 14px;">Añade tu primer documento</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = ordenados.map(doc => {
+                const estado = obtenerEstado(doc.fechaCaducidad);
+                const fechaFormat = new Date(doc.fechaCaducidad).toLocaleDateString('es-ES');
+                
+                if (editandoId === doc.id) {
+                    return `
+                        <div class="card">
+                            <label>Descripción</label>
+                            <textarea id="edit-texto-${doc.id}">${doc.texto}</textarea>
+                            <label>Fecha de Caducidad</label>
+                            <input type="date" id="edit-fecha-${doc.id}" value="${doc.fechaCaducidad}">
+                            <div class="doc-acciones">
+                                <button class="btn-guardar" onclick="guardarEdicion(${doc.id})">💾 Guardar</button>
+                                <button class="btn-cancelar" onclick="cancelarEdicion()">✕ Cancelar</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="doc-item ${estado.tipo}">
+                        <div class="doc-texto">${doc.texto}</div>
+                        <div class="doc-info">
+                            <span class="doc-fecha">📅 Caduca: ${fechaFormat}</span>
+                            <span class="doc-estado ${estado.tipo}">${estado.texto}</span>
+                        </div>
+                        <div class="doc-acciones">
+                            <button class="btn-editar" onclick="editarDocumento(${doc.id})">✏️ Editar</button>
+                            <button class="btn-eliminar" onclick="eliminarDocumento(${doc.id})">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-prompt').style.display = 'flex';
+        });
+
+        function instalarApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                    cerrarPrompt();
+                });
+            } else {
+                // Instrucciones manuales
+                alert('Para instalar:\n\niPhone: Toca el botón Compartir y selecciona "Añadir a inicio"\n\nAndroid: Menú → "Instalar aplicación"');
+            }
+        }
+
+        function cerrarPrompt() {
+            document.getElementById('install-prompt').style.display = 'none';
+        }
+
+        // Iniciar
+        cargarDatos();
+    </script>
+</body>
+</html>
